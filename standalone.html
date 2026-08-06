@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MCP 服务管理器</title>
+<title>MiClaw MCP 服务管理器</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui;background:#f5f5f5;color:#333}
 #app{max-width:600px;margin:0 auto;padding:10px}
 header{background:#1a73e8;color:#fff;padding:15px;border-radius:8px;margin-bottom:10px}
 header h1{font-size:18px;margin-bottom:10px}
+header p{font-size:11px;opacity:.8}
 #search{width:100%;padding:8px 12px;border:none;border-radius:20px;font-size:14px}
 #categories{display:flex;gap:6px;overflow-x:auto;padding:10px 0}
 .cat-btn{padding:6px 12px;border:1px solid #ddd;border-radius:16px;background:#fff;font-size:12px;white-space:nowrap;cursor:pointer}
@@ -17,6 +18,9 @@ header h1{font-size:18px;margin-bottom:10px}
 .card{background:#fff;border-radius:8px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);cursor:pointer}
 .card h3{font-size:14px;margin-bottom:4px}
 .card p{font-size:12px;color:#666}
+.card .tag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:8px;margin-top:4px}
+.tag-free{background:#e8f5e9;color:#2e7d32}
+.tag-key{background:#fff3e0;color:#e65100}
 .hidden{display:none}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;display:none}
 #detail{position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:100;padding:15px;overflow-y:auto;max-width:600px;margin:0 auto}
@@ -29,12 +33,14 @@ button{padding:8px 16px;border:none;border-radius:6px;background:#1a73e8;color:#
 button:hover{opacity:.9}
 #fav-btn.faved{background:#ff9800}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.note{background:#fffde7;padding:8px 12px;border-radius:6px;font-size:11px;color:#666;margin-bottom:10px}
 </style>
 </head>
 <body>
 <div id="app">
   <header>
-    <h1>MCP 服务管理器</h1>
+    <h1>MiClaw MCP 服务管理器</h1>
+    <p>远程 HTTP/SSE 服务 · 复制配置粘贴到 MiClaw</p>
     <input type="text" id="search" placeholder="搜索服务...">
   </header>
   <nav id="categories"></nav>
@@ -47,43 +53,33 @@ button:hover{opacity:.9}
     </div>
     <h2 id="d-name"></h2>
     <p id="d-desc"></p>
+    <div class="note">MiClaw 格式：{"servers":[{...}]}</div>
     <pre id="d-config"></pre>
     <div class="btn-row">
       <button onclick="copyConfig()">📋 复制配置</button>
-      <button onclick="copyRaw()">📋 复制命令行</button>
     </div>
   </div>
 </div>
 <script>
 const MCP_SERVICES=[
-{name:"fetch",cat:"搜索",desc:"网页内容抓取(免费)",cmd:"npx -y @modelcontextprotocol/server-fetch",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-fetch"]}},
-{name:"brave-search",cat:"搜索",desc:"Brave 搜索(需API Key)",cmd:"npx -y @modelcontextprotocol/server-brave-search",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-brave-search"],"env":{"BRAVE_API_KEY":"YOUR_KEY"}}},
-{name:"filesystem",cat:"办公",desc:"本地文件读写",cmd:"npx -y @modelcontextprotocol/server-filesystem /home",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","/home"]}},
-{name:"memory",cat:"办公",desc:"持久化知识记忆(免费)",cmd:"npx -y @modelcontextprotocol/server-memory",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-memory"]}},
-{name:"sqlite",cat:"办公",desc:"SQLite 数据库",cmd:"npx -y @modelcontextprotocol/server-sqlite",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-sqlite","--db-path","./data.db"]}},
-{name:"github",cat:"开发",desc:"GitHub 仓库/Issue/PR",cmd:"npx -y @modelcontextprotocol/server-github",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-github"],"env":{"GITHUB_PERSONAL_ACCESS_TOKEN":"YOUR_TOKEN"}}},
-{name:"puppeteer",cat:"开发",desc:"浏览器自动化/截图",cmd:"npx -y @modelcontextprotocol/server-puppeteer",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-puppeteer"]}},
-{name:"sequential-thinking",cat:"开发",desc:"复杂问题分步推理",cmd:"npx -y @modelcontextprotocol/server-sequential-thinking",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-sequential-thinking"]}},
-{name:"postgres",cat:"开发",desc:"PostgreSQL 数据库",cmd:"npx -y @modelcontextprotocol/server-postgres",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-postgres","postgresql://localhost/mydb"]}},
-{name:"wikipedia",cat:"教育",desc:"维基百科查询(免费)",cmd:"npx -y @modelcontextprotocol/server-wikipedia",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-wikipedia"]}},
-{name:"time",cat:"工具",desc:"世界时间/时区(免费)",cmd:"npx -y @modelcontextprotocol/server-time",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-time"]}},
-{name:"everything",cat:"工具",desc:"文件搜索(免费)",cmd:"npx -y @modelcontextprotocol/server-everything",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-everything"]}},
-{name:"slack",cat:"通讯",desc:"Slack 消息操作",cmd:"npx -y @modelcontextprotocol/server-slack",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-slack"],"env":{"SLACK_BOT_TOKEN":"YOUR_TOKEN","SLACK_TEAM_ID":"YOUR_TEAM"}}},
-{name:"notion",cat:"办公",desc:"Notion 笔记操作",cmd:"npx -y @notionhq/notion-mcp-server",config:{"command":"npx","args":["-y","@notionhq/notion-mcp-server"],"env":{"NOTION_API_KEY":"YOUR_TOKEN"}}},
-{name:"redis",cat:"开发",desc:"Redis 缓存操作",cmd:"npx -y @modelcontextprotocol/server-redis",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-redis"],"env":{"REDIS_URL":"redis://localhost:6379"}}},
-{name:"email",cat:"通讯",desc:"SMTP 邮件收发",cmd:"npx -y @modelcontextprotocol/server-email",config:{"command":"npx","args":["-y","@modelcontextprotocol/server-email"],"env":{"SMTP_HOST":"smtp.gmail.com","SMTP_PORT":"587","EMAIL_USER":"YOUR_EMAIL","EMAIL_PASS":"YOUR_PASS"}}}
+{name:"github-mcp",cat:"开发",desc:"GitHub 仓库/Issue/PR/代码搜索",needKey:true,config:{"servers":[{"name":"github-mcp","url":"https://api.githubcopilot.com/mcp/","headers":{"Authorization":"Bearer YOUR_GITHUB_TOKEN"}}]}},
+{name:"brave-search",cat:"搜索",desc:"Brave 联网搜索",needKey:true,config:{"servers":[{"name":"brave-search","url":"https://brave-search-mcp.brave.com/sse","headers":{"Authorization":"Bearer YOUR_BRAVE_KEY"}}]}},
+{name:"gitmcp",cat:"开发",desc:"任意 GitHub 项目文档(免费)",needKey:false,config:{"servers":[{"name":"gitmcp","url":"https://gitmcp.io/mcp"}]}},
+{name:"sequential-thinking",cat:"开发",desc:"复杂问题分步推理(免费)",needKey:false,config:{"servers":[{"name":"sequential-thinking","url":"https://mcp.andybrandt.net/sequential-thinking"}]}},
+{name:"arxiv",cat:"教育",desc:"arXiv 论文搜索(免费)",needKey:false,config:{"servers":[{"name":"arxiv","url":"https://mcp.andybrandt.net/arxiv"}]}},
+{name:"fetch",cat:"搜索",desc:"网页内容抓取(免费)",needKey:false,config:{"servers":[{"name":"fetch","url":"https://mcp.andybrandt.net/fetch"}]}},
+{name:"memory",cat:"办公",desc:"持久化知识记忆(免费)",needKey:false,config:{"servers":[{"name":"memory","url":"https://mcp.andybrandt.net/memory"}]}}
 ];
 let favs=JSON.parse(localStorage.getItem('favs')||'[]');
 let currentCat='全部',currentService=null;
 function init(){renderCategories();renderList(MCP_SERVICES);document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();renderList(MCP_SERVICES.filter(s=>s.name.includes(q)||s.desc.includes(q)))})}
 function renderCategories(){const cats=['全部','收藏',...new Set(MCP_SERVICES.map(s=>s.cat))];document.getElementById('categories').innerHTML=cats.map(c=>`<button class="cat-btn ${c===currentCat?'active':''}" onclick="filterCat('${c}')">${c}</button>`).join('')}
 function filterCat(cat){currentCat=cat;renderCategories();if(cat==='全部')renderList(MCP_SERVICES);else if(cat==='收藏')renderList(MCP_SERVICES.filter(s=>favs.includes(s.name)));else renderList(MCP_SERVICES.filter(s=>s.cat===cat))}
-function renderList(s){document.getElementById('list').innerHTML=s.map(s=>`<div class="card" onclick="showDetail('${s.name}')"><h3>${s.name}</h3><p>${s.desc}</p></div>`).join('')}
+function renderList(s){document.getElementById('list').innerHTML=s.map(s=>`<div class="card" onclick="showDetail('${s.name}')"><h3>${s.name}</h3><p>${s.desc}</p><span class="tag ${s.needKey?'tag-key':'tag-free'}">${s.needKey?'需要API Key':'免费'}</span></div>`).join('')}
 function showDetail(n){currentService=MCP_SERVICES.find(s=>s.name===n);document.getElementById('d-name').textContent=currentService.name;document.getElementById('d-desc').textContent=currentService.desc;document.getElementById('d-config').textContent=JSON.stringify(currentService.config,null,2);document.getElementById('fav-btn').textContent=favs.includes(n)?'已收藏':'收藏';document.getElementById('fav-btn').className=favs.includes(n)?'faved':'';document.getElementById('detail').classList.remove('hidden')}
 function closeDetail(){document.getElementById('detail').classList.add('hidden')}
 function toggleFav(){if(!currentService)return;const i=favs.indexOf(currentService.name);if(i>-1)favs.splice(i,1);else favs.push(currentService.name);localStorage.setItem('favs',JSON.stringify(favs));document.getElementById('fav-btn').textContent=favs.includes(currentService.name)?'已收藏':'收藏';document.getElementById('fav-btn').className=favs.includes(currentService.name)?'faved':''}
-function copyConfig(){if(!currentService)return;navigator.clipboard.writeText(JSON.stringify(currentService.config)).then(()=>toast('已复制配置'))}
-function copyRaw(){if(!currentService)return;navigator.clipboard.writeText(currentService.cmd).then(()=>toast('已复制命令行'))}
+function copyConfig(){if(!currentService)return;navigator.clipboard.writeText(JSON.stringify(currentService.config,null,2)).then(()=>toast('已复制配置'))}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2000)}
 init();
 </script>
