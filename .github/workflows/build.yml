@@ -5,19 +5,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Install Gradle
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gradle
-      - name: Build
-        run: gradle assembleDebug
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: gradle/actions/setup-gradle@v3
+      - run: gradle wrapper --gradle-version 8.2
+      - run: ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
         with:
           name: MCPManager
           path: app/build/outputs/apk/debug/*.apk
