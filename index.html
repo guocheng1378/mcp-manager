@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP 服务管理器</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>MCP 服务管理器</h1>
+    <input type="text" id="search" placeholder="搜索服务...">
+  </header>
+  <nav id="categories"></nav>
+  <main id="list"></main>
+  <div id="toast"></div>
+  <div id="detail" class="hidden">
+    <div class="detail-header">
+      <button onclick="closeDetail()">← 返回</button>
+      <button id="fav-btn" onclick="toggleFav()">☆ 收藏</button>
+    </div>
+    <h2 id="d-name"></h2>
+    <p id="d-desc"></p>
+    <pre id="d-config"></pre>
+    <button onclick="copyConfig()">📋 复制配置</button>
+  </div>
+</div>
+<script src="mcp-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
