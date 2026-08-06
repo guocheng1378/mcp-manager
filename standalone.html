@@ -8,31 +8,35 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui;background:#f5f5f5;color:#333}
 #app{max-width:600px;margin:0 auto;padding:10px}
-header{background:#1a73e8;color:#fff;padding:15px;border-radius:8px;margin-bottom:10px}
-header h1{font-size:18px;margin-bottom:5px}
-header p{font-size:11px;opacity:.8}
-#search{width:100%;padding:8px 12px;border:none;border-radius:20px;font-size:14px;margin-top:8px}
-#categories{display:flex;gap:6px;overflow-x:auto;padding:10px 0}
-.cat-btn{padding:6px 12px;border:1px solid #ddd;border-radius:16px;background:#fff;font-size:12px;white-space:nowrap;cursor:pointer}
+header{background:linear-gradient(135deg,#1a73e8,#4285f4);color:#fff;padding:16px;border-radius:12px;margin-bottom:12px}
+header h1{font-size:20px;margin-bottom:4px}
+header p{font-size:12px;opacity:.85;margin-bottom:10px}
+#search{width:100%;padding:10px 14px;border:none;border-radius:24px;font-size:14px;background:rgba(255,255,255,.95);color:#333}
+#categories{display:flex;gap:8px;overflow-x:auto;padding:12px 0 8px;-webkit-overflow-scrolling:touch}
+#categories::-webkit-scrollbar{display:none}
+.cat-btn{padding:7px 14px;border:1px solid #ccc;border-radius:20px;background:#fff;color:#444;font-size:13px;font-weight:500;white-space:nowrap;cursor:pointer;transition:all .2s}
 .cat-btn.active{background:#1a73e8;color:#fff;border-color:#1a73e8}
-.card{background:#fff;border-radius:8px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);cursor:pointer}
-.card h3{font-size:14px;margin-bottom:4px}
-.card p{font-size:12px;color:#666}
-.card .tag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:8px;margin-top:4px}
+.cat-btn:active{transform:scale(.95)}
+.card{background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer;transition:transform .1s}
+.card:active{transform:scale(.98)}
+.card h3{font-size:15px;margin-bottom:4px;color:#1a1a1a}
+.card p{font-size:12px;color:#666;line-height:1.4}
+.card .tag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:10px;margin-top:6px;font-weight:500}
 .tag-free{background:#e8f5e9;color:#2e7d32}
 .tag-key{background:#fff3e0;color:#e65100}
 .hidden{display:none}
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;display:none}
-#detail{position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:100;padding:15px;overflow-y:auto;max-width:600px;margin:0 auto}
-.detail-header{display:flex;justify-content:space-between;margin-bottom:15px}
-.detail-header button{padding:6px 12px;border:1px solid #ddd;border-radius:6px;background:#fff}
-#d-name{font-size:18px;margin-bottom:8px}
-#d-desc{color:#666;margin-bottom:15px;font-size:13px}
-#d-config{background:#f8f8f8;padding:10px;border-radius:6px;font-size:11px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:400px;overflow-y:auto;margin-bottom:10px}
-button{padding:8px 16px;border:none;border-radius:6px;background:#1a73e8;color:#fff;cursor:pointer;font-size:13px}
-button:hover{opacity:.9}
-#fav-btn.faved{background:#ff9800}
-.note{background:#fffde7;padding:8px 12px;border-radius:6px;font-size:11px;color:#666;margin-bottom:10px}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#323232;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;display:none;z-index:200}
+#detail{position:fixed;top:0;left:0;right:0;bottom:0;background:#f5f5f5;z-index:100;padding:16px;overflow-y:auto;max-width:600px;margin:0 auto}
+.detail-header{display:flex;justify-content:space-between;margin-bottom:16px}
+.detail-header button{padding:8px 14px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:13px;color:#444}
+#d-name{font-size:20px;margin-bottom:6px;color:#1a1a1a}
+#d-desc{color:#666;margin-bottom:14px;font-size:13px;line-height:1.5}
+#d-config{background:#1e1e1e;color:#d4d4d4;padding:14px;border-radius:10px;font-size:12px;font-family:'SF Mono',Menlo,monospace;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:400px;overflow-y:auto;margin-bottom:14px;line-height:1.5}
+.btn-row{display:flex;gap:10px}
+.btn-row button{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer}
+.btn-primary{background:#1a73e8;color:#fff}
+.btn-primary:active{opacity:.85}
+.note{background:#fffde7;padding:10px 14px;border-radius:8px;font-size:12px;color:#888;margin-bottom:12px;line-height:1.4}
 </style>
 </head>
 <body>
@@ -54,7 +58,9 @@ button:hover{opacity:.9}
     <p id="d-desc"></p>
     <div class="note">MiClaw 格式：{"servers":[{...}]}</div>
     <pre id="d-config"></pre>
-    <button onclick="copyConfig()">📋 复制配置</button>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="copyConfig()">📋 复制配置</button>
+    </div>
   </div>
 </div>
 <script>
@@ -81,11 +87,11 @@ let currentCat='全部',currentService=null;
 function init(){renderCategories();renderList(MCP_SERVICES);document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();renderList(MCP_SERVICES.filter(s=>s.name.includes(q)||s.desc.includes(q)))})}
 function renderCategories(){const cats=['全部','收藏',...new Set(MCP_SERVICES.map(s=>s.cat))];document.getElementById('categories').innerHTML=cats.map(c=>`<button class="cat-btn ${c===currentCat?'active':''}" onclick="filterCat('${c}')">${c}</button>`).join('')}
 function filterCat(cat){currentCat=cat;renderCategories();if(cat==='全部')renderList(MCP_SERVICES);else if(cat==='收藏')renderList(MCP_SERVICES.filter(s=>favs.includes(s.name)));else renderList(MCP_SERVICES.filter(s=>s.cat===cat))}
-function renderList(s){document.getElementById('list').innerHTML=s.map(s=>`<div class="card" onclick="showDetail('${s.name}')"><h3>${s.name}</h3><p>${s.desc}</p><span class="tag ${s.needKey?'tag-key':'tag-free'}">${s.needKey?'需要认证':'免费'}</span></div>`).join('')}
-function showDetail(n){currentService=MCP_SERVICES.find(s=>s.name===n);document.getElementById('d-name').textContent=currentService.name;document.getElementById('d-desc').textContent=currentService.desc;document.getElementById('d-config').textContent=JSON.stringify(currentService.config,null,2);document.getElementById('fav-btn').textContent=favs.includes(n)?'已收藏':'收藏';document.getElementById('fav-btn').className=favs.includes(n)?'faved':'';document.getElementById('detail').classList.remove('hidden')}
+function renderList(s){document.getElementById('list').innerHTML=s.length?s.map(s=>`<div class="card" onclick="showDetail('${s.name}')"><h3>${s.name}</h3><p>${s.desc}</p><span class="tag ${s.needKey?'tag-key':'tag-free'}">${s.needKey?'需要认证':'免费'}</span></div>`).join(''):'<p style="text-align:center;color:#999;padding:40px 0">没有找到服务</p>'}
+function showDetail(n){currentService=MCP_SERVICES.find(s=>s.name===n);document.getElementById('d-name').textContent=currentService.name;document.getElementById('d-desc').textContent=currentService.desc;document.getElementById('d-config').textContent=JSON.stringify(currentService.config,null,2);document.getElementById('fav-btn').textContent=favs.includes(n)?'★ 已收藏':'☆ 收藏';document.getElementById('fav-btn').className=favs.includes(n)?'faved':'';document.getElementById('detail').classList.remove('hidden');window.scrollTo(0,0)}
 function closeDetail(){document.getElementById('detail').classList.add('hidden')}
-function toggleFav(){if(!currentService)return;const i=favs.indexOf(currentService.name);if(i>-1)favs.splice(i,1);else favs.push(currentService.name);localStorage.setItem('favs',JSON.stringify(favs));document.getElementById('fav-btn').textContent=favs.includes(currentService.name)?'已收藏':'收藏';document.getElementById('fav-btn').className=favs.includes(currentService.name)?'faved':''}
-function copyConfig(){if(!currentService)return;navigator.clipboard.writeText(JSON.stringify(currentService.config,null,2)).then(()=>toast('已复制配置'))}
+function toggleFav(){if(!currentService)return;const i=favs.indexOf(currentService.name);if(i>-1)favs.splice(i,1);else favs.push(currentService.name);localStorage.setItem('favs',JSON.stringify(favs));document.getElementById('fav-btn').textContent=favs.includes(currentService.name)?'★ 已收藏':'☆ 收藏';document.getElementById('fav-btn').className=favs.includes(currentService.name)?'faved':''}
+function copyConfig(){if(!currentService)return;navigator.clipboard.writeText(JSON.stringify(currentService.config,null,2)).then(()=>toast('已复制配置')).catch(()=>{const ta=document.createElement('textarea');ta.value=JSON.stringify(currentService.config,null,2);document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('已复制配置')})}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2000)}
 init();
 </script>
