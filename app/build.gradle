@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
+    compileSdkVersion 33
     namespace 'com.mcpmanager'
-    compileSdk 33
     defaultConfig {
         applicationId "com.mcpmanager"
-        minSdk 24
-        targetSdk 33
+        minSdkVersion 24
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
     }
