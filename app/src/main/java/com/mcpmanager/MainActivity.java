@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onBackPressed() {
         if (webView.canGoBack()) {
             webView.goBack();
